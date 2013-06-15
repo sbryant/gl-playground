@@ -1,6 +1,5 @@
 #include <stddef.h>
 #include "GLFW/glfw3.h"
-#include "OpenGl/OpenGL.h"
 
 int main(int argc, char** argv) {
     GLFWwindow* window;
