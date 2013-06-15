@@ -24,6 +24,8 @@ int main(int argc, char** argv) {
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
 
+	/* Turn on modern extension checking before initializing GLEW */
+	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 
 	if (GLEW_OK != err) {
