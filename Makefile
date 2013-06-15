@@ -8,7 +8,7 @@ SOURCES = $(wildcard $(ROOT)/src/*.c)
 OBJS = $(patsubst %.c,%.o,$(SOURCES))
 CPPFLAGS = $(OPTCPPFLAGS)
 LIBS = $(shell pkg-config --libs glfw3) $(OPTLIBS)
-CFLAGS = -g -std=c99 $(INCLUDE) -Wall -Werror $(OPTFLAGS)
+CFLAGS = -g -std=c99 $(shell pkg-config --cflags glfw3) $(INCLUDE) -Wall -Werror $(OPTFLAGS)
 
 ifeq ($(shell uname),Darwin)
 # OS X specific libs required by glfw3
