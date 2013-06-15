@@ -5,10 +5,12 @@ TARGET = playground
 INCLUDE += -I$(ROOT)/src
 SOURCES = $(wildcard $(ROOT)/src/*.c)
 
+pkg-config = $(shell pkg-config --$(1) $(2))
+
 OBJS = $(patsubst %.c,%.o,$(SOURCES))
 CPPFLAGS = $(OPTCPPFLAGS)
-LIBS = $(shell pkg-config --libs glfw3) $(OPTLIBS)
-CFLAGS = -g -std=c99 $(shell pkg-config --cflags glfw3) $(INCLUDE) -Wall -Werror $(OPTFLAGS)
+LIBS = $(call pkg-config,libs,glfw3) $(call pkg-config,libs,glew) $(OPTLIBS)
+CFLAGS = -g -std=c99 $(call pkg-config,cflags,glfw3) $(call pkg-config,cflags,glew) $(INCLUDE) -Wall -Werror $(OPTFLAGS)
 
 ifeq ($(shell uname),Darwin)
 # OS X specific libs required by glfw3
