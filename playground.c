@@ -3,12 +3,16 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
+#include <SDL.h>
+#include <SDL_image.h>
 
 #define GLPG_SHADER_READ_SIZE 1024
+#define GLPG_VERTEX_STRIDE sizeof(float) * 7
 
 char *read_shader(const char* path) {
 	int fd = open(path, O_RDONLY);
@@ -67,11 +71,27 @@ int main(int argc, char** argv) {
 	}
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
+	SDL_Init(SDL_INIT_VIDEO);
+	/* SDL Image setup */
+	int img_init_flags = IMG_INIT_JPG | IMG_INIT_PNG;
+	int img_flags = IMG_Init(img_init_flags);
+	if((img_flags & img_init_flags) != img_init_flags) {
+		fprintf(stderr, "Error: Seting up SDL_image: %s\n", IMG_GetError());
+		goto error;
+	}
+
+	SDL_Surface* sample_image = IMG_Load("sample.png");
+	if(!sample_image) {
+		fprintf(stderr, "Error: Loading image: %s\n", IMG_GetError());
+		goto error;
+	}
+
 	float verts[] = {
-		/* x, y,  R,G,B */
-		0.0f, 0.5f,   1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f
+		/* x, y,      R,G,B             S,T*/
+		-0.5f, 0.5f,  1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f,   0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, -0.5f,  0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+		-0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f
 	};
 
 	/* Create a simple VAO for drawing */
@@ -89,6 +109,31 @@ int main(int argc, char** argv) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	/* Upload the data to the GPU */
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
+	GLuint ebo;
+	glGenBuffers(1, &ebo);
+
+	GLuint elements[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+
+	SDL_LockSurface(sample_image);
+
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sample_image->w, sample_image->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, sample_image->pixels);
+
+	SDL_UnlockSurface(sample_image);
+	SDL_FreeSurface(sample_image);
 
 	/* load the shaders */
 	char *vert_shader_source = read_shader("src/vert_shader1.glsl");
@@ -121,24 +166,23 @@ int main(int argc, char** argv) {
 	/* Tell GL how our data is laid out */
 	GLint pos_attrib = glGetAttribLocation(shader_program, "position");
 	glEnableVertexAttribArray(pos_attrib);
-	glVertexAttribPointer(pos_attrib, 2, GL_FLOAT, GL_FALSE, sizeof(float)*5, 0);
+	glVertexAttribPointer(pos_attrib, 2, GL_FLOAT, GL_FALSE, GLPG_VERTEX_STRIDE, 0);
 
 	GLint color_attrib = glGetAttribLocation(shader_program, "color");
 	glEnableVertexAttribArray(color_attrib);
-	glVertexAttribPointer(color_attrib, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(GLfloat) * 2));
+	glVertexAttribPointer(color_attrib, 3, GL_FLOAT, GL_FALSE, GLPG_VERTEX_STRIDE, (void*)(sizeof(GLfloat) * 2));
+
+	GLint tex_attrib = glGetAttribLocation(shader_program, "texCoords");
+	glEnableVertexAttribArray(tex_attrib);
+	glVertexAttribPointer(tex_attrib, 2, GL_FLOAT, GL_FALSE, GLPG_VERTEX_STRIDE, (void*)(sizeof(GLfloat) * 5));
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window)) {
-
-		GLint width, height;
-		glfwGetFramebufferSize(window, &width, &height);
-		glViewport(0, 0, width, height);
-
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
 
@@ -155,6 +199,7 @@ int main(int argc, char** argv) {
 	glDeleteVertexArrays(1, &vao);
 
 	glfwTerminate();
+	IMG_Quit();
 	return 0;
   error:
 	glfwTerminate();
