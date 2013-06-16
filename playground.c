@@ -32,9 +32,6 @@ char *read_shader(const char* path) {
 	return result;
 };
 
-#define read_vertex_shader(path) read_shader(path)
-#define read_fragment_shader(path) read_shader(path)
-
 int main(int argc, char** argv) {
 	GLFWwindow* window;
 
