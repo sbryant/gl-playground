@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
 	/* load the shaders */
 	char *vert_shader_source = read_shader("src/vert_shader1.glsl");
 	assert(vert_shader_source != NULL);
-	char *frag_shader_source = read_fragment_shader("src/frag_shader1.glsl");
+	char *frag_shader_source = read_shader("src/frag_shader1.glsl");
 	assert(frag_shader_source != NULL);
 
 	GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
