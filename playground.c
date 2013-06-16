@@ -29,6 +29,8 @@ char *read_shader(const char* path) {
 		result[file_size] = '\0';
 	}
 
+	close(fd);
+
 	return result;
 };
 
