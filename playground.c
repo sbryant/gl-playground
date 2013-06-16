@@ -122,12 +122,15 @@ int main(int argc, char** argv) {
 	glVertexAttribPointer(pos_attrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glEnableVertexAttribArray(pos_attrib);
+	GLint vert_color = glGetUniformLocation(shader_program, "inColor");
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window)) {
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
+
+		glUniform3f(vert_color, 1.0f, 0.0f, 0.0f);
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		/* Swap front and back buffers */
