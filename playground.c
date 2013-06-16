@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
+#include <math.h>
 
 #define GLPG_SHADER_READ_SIZE 1024
 
@@ -125,12 +127,16 @@ int main(int argc, char** argv) {
 	GLint vert_color = glGetUniformLocation(shader_program, "inColor");
 
 	/* Loop until the user closes the window */
-	while (!glfwWindowShouldClose(window)) {
+	while (1) {
+		if(glfwWindowShouldClose(window))
+			break;
+
+		float time = (float)clock() / (float)CLOCKS_PER_SEC;
+		glUniform3f(vert_color, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 0.0f);
+
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
-
-		glUniform3f(vert_color, 1.0f, 0.0f, 0.0f);
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		/* Swap front and back buffers */
