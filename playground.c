@@ -8,7 +8,7 @@
 #include <string.h>
 #include <assert.h>
 
-#define GLPG_SHADER_READ_SIZE 10
+#define GLPG_SHADER_READ_SIZE 1024
 
 char *read_shader(const char* path) {
 	int fd = open(path, O_RDONLY);
