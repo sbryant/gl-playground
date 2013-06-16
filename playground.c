@@ -68,6 +68,7 @@ int main(int argc, char** argv) {
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
 	float verts[] = {
+		/* x, y,  R,G,B */
 		0.0f, 0.5f,   1.0f, 0.0f, 0.0f,
 		0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
 		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f
