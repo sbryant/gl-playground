@@ -6,6 +6,7 @@ A skeleton for playing around in OpenGL.
 Building
 ========
 
+* Make sure you have SDL and SDL_image installed.
 * Make sure you have GLEW installed.
 * Make sure you have glfw 3.x installed.
 * Make sure you have pkg-config installed
