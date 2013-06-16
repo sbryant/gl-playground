@@ -2,6 +2,38 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <string.h>
+#include <assert.h>
+
+#define GLPG_SHADER_READ_SIZE 10
+
+char *read_shader(const char* path) {
+	int fd = open(path, O_RDONLY);
+	char buffer[GLPG_SHADER_READ_SIZE];
+	char *result = NULL;
+	size_t file_size = 0;
+	size_t bytes_read = 0;
+	size_t offset = 0;
+
+	while((bytes_read = read(fd, &buffer, GLPG_SHADER_READ_SIZE))) {
+		if(bytes_read == -1)
+			return NULL;
+
+		offset = file_size;
+		file_size += bytes_read;
+		result = (char*)realloc(result, file_size + 1);
+		memcpy(result + offset, &buffer, bytes_read);
+		result[file_size] = '\0';
+	}
+
+	return result;
+};
+
+#define read_vertex_shader(path) read_shader(path)
+#define read_fragment_shader(path) read_shader(path)
 
 int main(int argc, char** argv) {
 	GLFWwindow* window;
@@ -36,18 +68,81 @@ int main(int argc, char** argv) {
 	}
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
+	float verts[] = {
+		0.0f, 0.5f,
+		0.5f, -0.5f,
+		-0.5f, -0.5f
+	};
+
+	/* Create a simple VAO for drawing */
+	GLuint vao;
+	glGenVertexArrays(1, &vao);
+
+	/* This tells GL which vao to operate against */
+	glBindVertexArray(vao);
+
+	/* Generate a VBO handler to associate data */
+	GLuint vbo;
+	glGenBuffers(1, &vbo);
+
+	/* Activate the buffer */
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	/* Upload the data to the GPU */
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
+
+	/* load the shaders */
+	char *vert_shader_source = read_shader("src/vert_shader1.glsl");
+	assert(vert_shader_source != NULL);
+	char *frag_shader_source = read_fragment_shader("src/frag_shader1.glsl");
+	assert(frag_shader_source != NULL);
+
+	GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vert_shader, 1, (const GLchar **)&vert_shader_source, NULL);
+
+	GLuint frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(frag_shader, 1, (const GLchar **)&frag_shader_source, NULL);
+
+	glCompileShader(vert_shader);
+	glCompileShader(frag_shader);
+
+	/* handler for binding shaders */
+	GLuint shader_program = glCreateProgram();
+	glAttachShader(shader_program, vert_shader);
+	glAttachShader(shader_program, frag_shader);
+
+	glBindFragDataLocation(shader_program, 0, "outColor");
+
+	glLinkProgram(shader_program);
+	glUseProgram(shader_program);
+
+	free(vert_shader_source);
+	free(frag_shader_source);
+	/* Tell GL how our data is laid out */
+	GLint pos_attrib = glGetAttribLocation(shader_program, "position");
+	glVertexAttribPointer(pos_attrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(pos_attrib);
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window)) {
 		/* Render here */
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
 
 		/* Poll for and process events */
 		glfwPollEvents();
 	}
+
+	/* clean up */
+	glDeleteProgram(shader_program);
+	glDeleteShader(frag_shader);
+	glDeleteShader(vert_shader);
+
+	glDeleteBuffers(1, &vbo);
+	glDeleteVertexArrays(1, &vao);
 
 	glfwTerminate();
 	return 0;
