@@ -5,7 +5,7 @@ TARGET = playground
 INCLUDE += -I$(ROOT)/src
 SOURCES = $(wildcard $(ROOT)/src/*.c)
 
-pkg-config = $(shell pkg-config --$(1) $(2))
+pkg-config = $(shell pkg-config --$(1) --static $(2))
 
 OBJS = $(patsubst %.c,%.o,$(SOURCES))
 CPPFLAGS = $(OPTCPPFLAGS)
@@ -14,7 +14,7 @@ CFLAGS = -g -std=c99 $(call pkg-config,cflags,glfw3) $(call pkg-config,cflags,gl
 
 ifeq ($(shell uname),Darwin)
 # OS X specific libs required by glfw3
-LIBS += -framework GLUT -framework OpenGL -framework Cocoa -framework IOKit
+# LIBS += -framework GLUT -framework OpenGL -framework Cocoa -framework IOKit
 else
 # TODO: support EGL?
 endif
