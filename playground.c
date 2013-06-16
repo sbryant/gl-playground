@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
-#include <time.h>
 #include <math.h>
 
 #define GLPG_SHADER_READ_SIZE 1024
@@ -131,7 +130,7 @@ int main(int argc, char** argv) {
 		if(glfwWindowShouldClose(window))
 			break;
 
-		float time = (float)clock() / (float)CLOCKS_PER_SEC;
+		float time = (float)glfwGetTime();
 		glUniform3f(vert_color, (sin(time * 4.0f) + 1.0f) / 2.0f, 0.0f, 0.0f);
 
 		/* Render here */
