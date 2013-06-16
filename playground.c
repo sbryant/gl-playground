@@ -116,9 +116,11 @@ int main(int argc, char** argv) {
 
 	free(vert_shader_source);
 	free(frag_shader_source);
+
 	/* Tell GL how our data is laid out */
 	GLint pos_attrib = glGetAttribLocation(shader_program, "position");
 	glVertexAttribPointer(pos_attrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
 	glEnableVertexAttribArray(pos_attrib);
 
 	/* Loop until the user closes the window */
