@@ -68,9 +68,9 @@ int main(int argc, char** argv) {
 	fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
 	float verts[] = {
-		0.0f, 0.5f,
-		0.5f, -0.5f,
-		-0.5f, -0.5f
+		0.0f, 0.5f,   1.0f, 0.0f, 0.0f,
+		0.5f, -0.5f,  0.0f, 1.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f
 	};
 
 	/* Create a simple VAO for drawing */
@@ -119,18 +119,23 @@ int main(int argc, char** argv) {
 
 	/* Tell GL how our data is laid out */
 	GLint pos_attrib = glGetAttribLocation(shader_program, "position");
-	glVertexAttribPointer(pos_attrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
 	glEnableVertexAttribArray(pos_attrib);
-	GLint vert_color = glGetUniformLocation(shader_program, "inColor");
+	glVertexAttribPointer(pos_attrib, 2, GL_FLOAT, GL_FALSE, sizeof(float)*5, 0);
+
+	GLint color_attrib = glGetAttribLocation(shader_program, "color");
+	glEnableVertexAttribArray(color_attrib);
+	glVertexAttribPointer(color_attrib, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(sizeof(GLfloat) * 2));
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window)) {
+
+		GLint width, height;
+		glfwGetFramebufferSize(window, &width, &height);
+		glViewport(0, 0, width, height);
+
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
-
-		glUniform3f(vert_color, 1.0f, 0.0f, 0.0f);
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		/* Swap front and back buffers */
