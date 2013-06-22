@@ -2,42 +2,15 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
 #include <assert.h>
 #include <time.h>
 #include <SDL.h>
 #include <SDL_image.h>
 
-#define GLPG_SHADER_READ_SIZE 1024
+#include "utils.h"
+
 #define GLPG_VERTEX_STRIDE sizeof(float) * 7
-
-char *read_shader(const char* path) {
-	int fd = open(path, O_RDONLY);
-	char buffer[GLPG_SHADER_READ_SIZE];
-	char *result = NULL;
-	size_t file_size = 0;
-	size_t bytes_read = 0;
-	size_t offset = 0;
-
-	while((bytes_read = read(fd, &buffer, GLPG_SHADER_READ_SIZE))) {
-		if(bytes_read == -1)
-			return NULL;
-
-		offset = file_size;
-		file_size += bytes_read;
-		result = (char*)realloc(result, file_size + 1);
-		memcpy(result + offset, &buffer, bytes_read);
-		result[file_size] = '\0';
-	}
-
-	close(fd);
-
-	return result;
-};
 
 int main(int argc, char** argv) {
 	GLFWwindow* window;
