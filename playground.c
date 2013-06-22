@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
 #include <SDL.h>
 #include <SDL_image.h>
 
@@ -86,6 +87,12 @@ int main(int argc, char** argv) {
 		goto error;
 	}
 
+	SDL_Surface* sample_image2 = IMG_Load("sample2.png");
+	if(!sample_image2) {
+		fprintf(stderr, "Error: Loading image: %s\n", IMG_GetError());
+		goto error;
+	}
+
 	float verts[] = {
 		/* x, y,      R,G,B             S,T*/
 		-0.5f, 0.5f,  1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
@@ -113,6 +120,7 @@ int main(int argc, char** argv) {
 	GLuint ebo;
 	glGenBuffers(1, &ebo);
 
+    /* Oreder in which to draw rect */
 	GLuint elements[] = {
 		0, 1, 2,
 		2, 3, 0
@@ -121,19 +129,28 @@ int main(int argc, char** argv) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
 
-	SDL_LockSurface(sample_image);
+	GLuint texture[2];
+	glGenTextures(2, texture);
 
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glGenerateMipmap(GL_TEXTURE_2D);
-
+	SDL_LockSurface(sample_image);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sample_image->w, sample_image->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, sample_image->pixels);
-
 	SDL_UnlockSurface(sample_image);
 	SDL_FreeSurface(sample_image);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, texture[1]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	SDL_LockSurface(sample_image2);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sample_image2->w, sample_image2->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, sample_image2->pixels);
+	SDL_UnlockSurface(sample_image2);
+	SDL_FreeSurface(sample_image2);
 
 	/* load the shaders */
 	char *vert_shader_source = read_shader("src/vert_shader1.glsl");
@@ -176,12 +193,19 @@ int main(int argc, char** argv) {
 	glEnableVertexAttribArray(tex_attrib);
 	glVertexAttribPointer(tex_attrib, 2, GL_FLOAT, GL_FALSE, GLPG_VERTEX_STRIDE, (void*)(sizeof(GLfloat) * 5));
 
+    glUniform1i(glGetUniformLocation(shader_program, "tex"), 0);
+    glUniform1i(glGetUniformLocation(shader_program, "tex2"), 1);
+
+    GLint uniform_time = glGetUniformLocation(shader_program, "time");
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window)) {
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 
+		float factor = (float)glfwGetTime() / 3600.0;
+		glUniform1i(uniform_time, factor);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
