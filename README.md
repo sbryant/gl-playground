@@ -8,7 +8,7 @@ Building
 
 * Make sure you have SDL and SDL_image installed.
 * Make sure you have GLEW installed.
-* Make sure you have glfw 3.x installed.
+* Make sure you have glfw 3.x installed (at least 3.0.1 for OS X).
 * Make sure you have pkg-config installed
 
 `make` and a playground executable will be built.
