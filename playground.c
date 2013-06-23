@@ -176,6 +176,7 @@ int main(int argc, char** argv) {
     vec3 axis = VEC3_ROTATE_Z;
     mat4 result = MAT4_IDENTITY;
     mat4_rotate(trans, 180.0, axis, result);
+    glUniformMatrix4fv(uniform_translate, 1, GL_FALSE, (GLfloat*)&result);
 
     /* turn off vsync */
     glfwSwapInterval(0);
@@ -188,7 +189,6 @@ int main(int argc, char** argv) {
 
         float factor = (float)glfwGetTime();
 		glUniform1f(uniform_time, factor);
-        glUniformMatrix4fv(uniform_translate, 1, GL_FALSE, (GLfloat*)&result);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
