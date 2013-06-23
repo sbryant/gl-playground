@@ -12,5 +12,5 @@ uniform mat4 trans;
 void main() {
 	Color = color;
 	TexCoords = texCoords;
-	gl_Position = trans * vec4(position, 0.0, 1.0);
+	gl_Position = vec4(position, 0.0, 1.0);
 }
