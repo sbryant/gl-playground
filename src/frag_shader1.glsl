@@ -13,5 +13,5 @@ void main() {
 	vec4 sampleTex2 = texture(tex2, TexCoords);
 	float factor = (sin(time * 3.0) + 1.0) / 2.0;
 
-	outColor =  mix(sampleTex, sampleTex2, factor);
+	outColor =  vec4(Color, 1.0) * mix(sampleTex, sampleTex2, factor);
 }
