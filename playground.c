@@ -171,6 +171,9 @@ int main(int argc, char** argv) {
 
     GLint uniform_time = glGetUniformLocation(shader_program, "time");
 
+    /* turn off vsync */
+    glfwSwapInterval(0);
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window)) {
 		/* Render here */
