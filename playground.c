@@ -170,11 +170,25 @@ int main(int argc, char** argv) {
     glUniform1i(glGetUniformLocation(shader_program, "tex2"), 1);
 
     GLint uniform_time = glGetUniformLocation(shader_program, "time");
-    GLint uniform_translate = glGetUniformLocation(shader_program, "trans");
+    GLint uniform_model = glGetUniformLocation(shader_program, "model");
+    GLint uniform_view = glGetUniformLocation(shader_program, "view");
+    GLint uniform_proj = glGetUniformLocation(shader_program, "proj");
 
-    mat4 trans = MAT4_IDENTITY;
-    vec3 axis = VEC3_ROTATE_Z;
+    mat4 model = MAT4_IDENTITY;
     mat4 result = MAT4_IDENTITY;
+    mat4 view = MAT4_ZERO;
+    mat4 proj = MAT4_ZERO;
+
+    vec3 axis = VEC3_ROTATE_Z;
+    vec3 eye = { 1.2, 1.2, 1.2 };
+    vec3 center = { 0.0, 0.0, 0.0 };
+    vec3 up = { 0.0, 0.0, 1.0 };
+
+    mat4_lookat(eye, center, up, view);
+    glUniformMatrix4fv(uniform_view, 1, GL_FALSE, (GLfloat*)&view);
+
+    mat4_perspective(45.0, 1280.0, 720.0, 1.0, 10.0, proj);
+    glUniformMatrix4fv(uniform_proj, 1, GL_FALSE, (GLfloat*)&proj);
 
     /* turn off vsync */
     glfwSwapInterval(0);
@@ -186,9 +200,9 @@ int main(int argc, char** argv) {
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 
         float factor = (float)glfwGetTime();
-        mat4_rotate(trans, factor * 180.0, axis, result);
+        mat4_rotate(model, factor * 180.0, axis, result);
 
-        glUniformMatrix4fv(uniform_translate, 1, GL_FALSE, (GLfloat*)&result);
+        glUniformMatrix4fv(uniform_model, 1, GL_FALSE, (GLfloat*)&result);
 		glUniform1f(uniform_time, factor);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
