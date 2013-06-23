@@ -177,8 +177,8 @@ int main(int argc, char** argv) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 
-		float factor = (float)glfwGetTime() / 3600.0;
-		glUniform1i(uniform_time, factor);
+        float factor = (float)glfwGetTime();
+		glUniform1f(uniform_time, factor);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
