@@ -30,7 +30,7 @@ clean:
 .PHONY: all clean
 
 $(TARGET): $(TARGET).o $(OBJS)
-	$(CC) $(CFLAGS) $^ $(LIBS) -flto -o $@.new
+	$(CC) $(CFLAGS) $^ $(LIBS) -o $@.new
 	mv $@.new $@
 
 %.o: %.c
