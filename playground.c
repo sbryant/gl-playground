@@ -176,8 +176,8 @@ int main(int argc, char** argv) {
 
     mat4 model = MAT4_IDENTITY;
     mat4 result = MAT4_IDENTITY;
-    mat4 view = MAT4_ZERO;
-    mat4 proj = MAT4_ZERO;
+    mat4 view = MAT4_IDENTITY;
+    mat4 proj = MAT4_IDENTITY;
 
     vec3 axis = VEC3_ROTATE_Z;
     vec3 eye = { 1.2, 1.2, 1.2 };
