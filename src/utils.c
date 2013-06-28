@@ -163,11 +163,10 @@ void mat4_mul(mat4 a, mat4 b, mat4 result) {
     /* go through the rows multiplying the rows of by the columns of be and adding the sums */
     for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 4; j++) {
-            float temp = 0.0;
+            result[i][j] =  0.0;
             for(int k = 0; k < 4; k++) {
-                temp += a[i][k] * b[k][j];
+                result[i][j] += a[k][j] * b[i][k];
             }
-            result[i][j] = temp;
         }
     }
 }
