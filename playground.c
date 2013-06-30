@@ -12,6 +12,9 @@
 
 #define GLPG_VERTEX_STRIDE sizeof(float) * 7
 
+#define WINDOW_W 1280.0
+#define WINDOW_H 720.0
+
 int main(int argc, char** argv) {
 	GLFWwindow* window;
 
@@ -25,7 +28,7 @@ int main(int argc, char** argv) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(WINDOW_W, WINDOW_H, "Hello World", NULL, NULL);
 	if (!window) {
 		goto error;
 	}
