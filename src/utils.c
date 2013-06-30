@@ -71,20 +71,20 @@ void mat4_lookat(vec3 *eye, vec3 *center, vec3 *up, mat4 *result) {
     vec3_cross(&z_axis, &x_axis, &y_axis);
 
     (*result)[0][0] = x_axis[0];
-    (*result)[1][0] = y_axis[0];
-    (*result)[2][0] = z_axis[0];
-
     (*result)[0][1] = x_axis[1];
-    (*result)[1][1] = y_axis[1];
-    (*result)[2][1] = z_axis[1];
-
     (*result)[0][2] = x_axis[2];
+
+    (*result)[1][0] = y_axis[0];
+    (*result)[1][1] = y_axis[1];
     (*result)[1][2] = y_axis[2];
+
+    (*result)[2][0] = z_axis[0];
+    (*result)[2][1] = z_axis[1];
     (*result)[2][2] = z_axis[2];
 
-    (*result)[0][3] = 0.0;
-    (*result)[1][3] = 0.0;
-    (*result)[2][3] = 0.0;
+    (*result)[3][0] = 0.0;
+    (*result)[3][1] = 0.0;
+    (*result)[3][2] = 0.0;
     (*result)[3][3] = 1.0;
 }
 
