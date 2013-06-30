@@ -184,10 +184,10 @@ int main(int argc, char** argv) {
     vec3 center = { 0.0, 0.0, 0.0 };
     vec3 up = { 0.0, 0.0, 1.0 };
 
-    mat4_lookat(&eye, &center, &up, view);
+    mat4_lookat(&eye, &center, &up, &view);
     glUniformMatrix4fv(uniform_view, 1, GL_FALSE, (GLfloat*)&view);
 
-    mat4_perspective(45.0, 1280.0, 720.0, 1.0, 10.0, proj);
+    mat4_perspective(45.0, WINDOW_W, WINDOW_H, 1.0, 10.0, &proj);
     glUniformMatrix4fv(uniform_proj, 1, GL_FALSE, (GLfloat*)&proj);
 
     /* turn off vsync */
