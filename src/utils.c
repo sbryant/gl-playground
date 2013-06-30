@@ -134,7 +134,7 @@ void mat4_frustum(float left, float right, float bottom, float top, float near, 
 }
 
 void mat4_perspective(float fovy, float w, float h, float z_near, float z_far, mat4 *result) {
-    float ymax = z_near * tan(fovy * 0.5);
+    float ymax = z_near * tanf(fovy * 0.5);
     float ymin = -ymax;
     float aspect = w/h;
     float xmin = ymin * aspect;
