@@ -48,43 +48,34 @@ void mat4_rotate(mat4 *model, float angle, vec3 *axis, mat4 *result) {
 
 void mat4_lookat(vec3 *eye, vec3 *center, vec3 *up, mat4 *result) {
 
-    vec3 z_axis; vec3 x_axis; vec3 y_axis;
-    vec3 eye_sub_center; vec3 up_cross_z;
+    vec3 f; vec3 s; vec3 u;
+    vec3 eye_sub_center; vec3 up_cross_f;
 
-    vec3_sub(eye, center, &eye_sub_center);
-    vec3_normalize(&eye_sub_center, &z_axis);
+    vec3_sub(center, eye, &eye_sub_center);
+    vec3_normalize(&eye_sub_center, &f);
 
-    if(vec3_length(&z_axis) == 0.0) {
-        z_axis[2] = 1.0;
-    }
+    vec3_normalize(up, &u);
 
-    vec3_cross(up, &z_axis, &up_cross_z);
-    vec3_normalize(&up_cross_z, &x_axis);
+    vec3_cross(&f, &u, &up_cross_f);
+    vec3_normalize(&up_cross_f, &s);
 
-    if(vec3_length(&x_axis) == 0.0) {
-        z_axis[0] += 0.0001;
+    vec3_cross(&s, &f, &u);
 
-        vec3_cross(up, &z_axis, &up_cross_z);
-        vec3_normalize(&up_cross_z, &x_axis);
-    }
+    (*result)[0][0] = s[0];
+    (*result)[1][0] = s[1];
+    (*result)[2][0] = s[2];
 
-    vec3_cross(&z_axis, &x_axis, &y_axis);
+    (*result)[0][1] = u[0];
+    (*result)[1][1] = u[1];
+    (*result)[2][2] = u[2];
 
-    (*result)[0][0] = x_axis[0];
-    (*result)[0][1] = x_axis[1];
-    (*result)[0][2] = x_axis[2];
+    (*result)[0][2] = -f[0];
+    (*result)[1][2] = -f[1];
+    (*result)[2][2] = -f[2];
 
-    (*result)[1][0] = y_axis[0];
-    (*result)[1][1] = y_axis[1];
-    (*result)[1][2] = y_axis[2];
-
-    (*result)[2][0] = z_axis[0];
-    (*result)[2][1] = z_axis[1];
-    (*result)[2][2] = z_axis[2];
-
-    (*result)[3][0] = 0.0;
-    (*result)[3][1] = 0.0;
-    (*result)[3][2] = 0.0;
+    (*result)[3][0] = -vec3_dot(&s, eye);
+    (*result)[3][1] = -vec3_dot(&u, eye);
+    (*result)[3][2] = vec3_dot(&f, eye);
     (*result)[3][3] = 1.0;
 }
 
@@ -123,8 +114,8 @@ void mat4_frustum(float left, float right, float bottom, float top, float near, 
 
     float a = (right + left) / (right - left);
     float b = (top + bottom) / (top - bottom);
-    float c = - (far + near) / (far - near);
-    float d = -2 * far * near / (far - near);
+    float c = -(far + near) / (far - near);
+    float d = -(2 * far * near) / (far - near);
 
     (*result)[0][0] = x; (*result)[0][2] = a;
     (*result)[1][1] = y; (*result)[1][2] = b;
@@ -134,7 +125,7 @@ void mat4_frustum(float left, float right, float bottom, float top, float near, 
 }
 
 void mat4_perspective(float fovy, float w, float h, float z_near, float z_far, mat4 *result) {
-    float ymax = z_near * tanf(fovy * 0.5);
+    float ymax = z_near * tanf(fovy * (float)M_PI / 360.0);
     float ymin = -ymax;
     float aspect = w/h;
     float xmin = ymin * aspect;
