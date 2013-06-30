@@ -57,15 +57,15 @@ typedef vec4 mat4[4];
 
 char *read_shader(const char* path);
 
-void vec3_normalize(vec3 v, vec3 res);
-void vec3_cross(vec3 a, vec3 b, vec3 result);
-void vec3_sub(vec3 a, vec3 b, vec3 result);
-float vec3_dot(vec3 a, vec3 b);
-float vec3_length(vec3 a);
+void vec3_normalize(vec3 *v, vec3 *res);
+void vec3_cross(vec3 *a, vec3 *b, vec3 *result);
+void vec3_sub(vec3 *a, vec3 *b, vec3 *result);
+float vec3_dot(vec3 *a, vec3 *b);
+float vec3_length(vec3 *a);
 
 void mat4_rotate(mat4 model, float angle, vec3 rotation_axis, mat4 result);
 void mat4_mul(mat4 a, mat4 b, mat4 result);
-void mat4_lookat(vec3 eye, vec3 center, vec3 up, mat4 result);
+void mat4_lookat(vec3 *eye, vec3 *center, vec3 *up, mat4 result);
 void mat4_perspective(float fov, float w, float h, float z_near, float z_far, mat4 result);
 void mat4_frustum(float left, float right, float bottom, float top, float near, float far, mat4 result);
 #endif
