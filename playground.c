@@ -203,10 +203,10 @@ int main(int argc, char** argv) {
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 
         float factor = (float)glfwGetTime();
-        mat4_rotate(model, factor * 180.0, axis, result);
+        mat4_rotate(&model, factor * 180.0, &axis, &result);
 
         glUniformMatrix4fv(uniform_model, 1, GL_FALSE, (GLfloat*)&result);
-		glUniform1f(uniform_time, factor);
+        glUniform1f(uniform_time, factor);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		/* Swap front and back buffers */
