@@ -141,17 +141,6 @@ void mat4_perspective(float fovy, float w, float h, float z_near, float z_far, m
     float xmax = ymax * aspect;
 
     mat4_frustum(xmin, xmax, ymin, ymax, z_near, z_far, result);
-/*
-    float aspect = w / h;
-    float depth = z_far - z_near;
-    float y_scale = 1.0 / tan(fovy * M_PI / 360.0);
-    float x_scale = y_scale / aspect;
-
-    result[0][0] = x_scale;
-    result[1][1] = y_scale;
-    result[2][2] = (z_far + z_near) / depth;
-    result[2][3] = (2 * z_far * z_near) / depth;
-    result[3][2] = -1.0; */
 }
 
 void mat4_mul(mat4 *a, mat4 *b, mat4 *result) {
